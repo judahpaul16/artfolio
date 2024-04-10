@@ -1,11 +1,11 @@
+import 'package:flutter/material.dart';
+import 'package:artfolio/utils/db_helper.dart';
+import 'package:artfolio/models/artwork.dart';
+import 'package:artfolio/utils/strings.dart';
+import 'package:artfolio/utils/theme.dart';
 import 'package:artfolio/artwork_detail_page.dart';
 import 'package:artfolio/edit_artwork_page.dart';
 import 'package:artfolio/add_artwork_page.dart';
-import 'package:flutter/material.dart';
-import 'utils/db_helper.dart';
-import 'models/artwork.dart';
-import 'utils/strings.dart';
-import 'utils/theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -35,6 +35,10 @@ class HomePage extends StatefulWidget {
 }
 
 class HomePageState extends State<HomePage> {
+  final _formKey = GlobalKey<FormState>();
+  bool _isLoggedIn = false;
+  final _usernameController = TextEditingController();
+  final _passwordController = TextEditingController();
   Future<List<Artwork>>? _artworkListFuture;
   Key _futureBuilderKey = UniqueKey();
 
@@ -48,53 +52,26 @@ class HomePageState extends State<HomePage> {
     _artworkListFuture = DatabaseHelper.instance.getArtworks();
   }
 
-  void _editArtwork(BuildContext context, Artwork artwork) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => EditArtworkPage(artwork: artwork),
-      ),
-    ).then((_) {
-      setState(() {
-        _futureBuilderKey = UniqueKey();
-        _refreshArtworkList();
-      });
+  void _toggleLoginState() {
+    setState(() {
+      _isLoggedIn = !_isLoggedIn;
     });
   }
 
-  void _deleteArtwork(BuildContext context, int? artworkId) {
-    if (artworkId == null) return;
-
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("Confirm Delete"),
-          content: Text("Are you sure you want to delete this artwork?"),
-          actions: <Widget>[
-            TextButton(
-              child: Text("Cancel"),
-              onPressed: () => Navigator.of(context).pop(),
-            ),
-            TextButton(
-              child: Text("Delete"),
-              onPressed: () {
-                DatabaseHelper.instance.deleteArtwork(artworkId).then((_) {
-                  _refreshArtworkList();
-                  Navigator.of(context).pop();
-                });
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _refreshArtworkList();
+  void _login() {
+    if (_usernameController.text == str_username &&
+        _passwordController.text == str_password) {
+      _toggleLoginState();
+      Navigator.pop(context);
+    } else {
+      Navigator.pop(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Invalid username or password'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   @override
@@ -102,52 +79,138 @@ class HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(homePageTitle),
+        actions: [
+          IconButton(
+            icon: Icon(_isLoggedIn ? Icons.logout : Icons.login),
+            onPressed: () {
+              if (_isLoggedIn) {
+                _toggleLoginState();
+              } else {
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: Text('Login'),
+                    content: Form(
+                      key: _formKey,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          TextFormField(
+                            controller: _usernameController,
+                            decoration: InputDecoration(labelText: 'Username'),
+                            validator: (value) {
+                              if (value?.isEmpty ?? true) {
+                                return 'Please enter your username';
+                              }
+                              return null;
+                            },
+                          ),
+                          TextFormField(
+                            controller: _passwordController,
+                            obscureText: true,
+                            decoration: InputDecoration(labelText: 'Password'),
+                            validator: (value) {
+                              if (value?.isEmpty ?? true) {
+                                return 'Please enter your password';
+                              }
+                              return null;
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: Text('Cancel'),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          if (_formKey.currentState!.validate()) {
+                            _login();
+                          }
+                        },
+                        child: Text('Login'),
+                      ),
+                    ],
+                  ),
+                );
+              }
+            },
+          ),
+        ],
       ),
       body: FutureBuilder<List<Artwork>>(
         key: _futureBuilderKey,
-        future: DatabaseHelper.instance.getArtworks(),
-        builder: (BuildContext context, AsyncSnapshot<List<Artwork>> snapshot) {
-          if (!snapshot.hasData) {
-            return const Center(child: CircularProgressIndicator());
-          }
+        future: _artworkListFuture,
+        builder: (context, snapshot) {
+          if (!snapshot.hasData)
+            return Center(child: CircularProgressIndicator());
           return GridView.builder(
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2),
+            gridDelegate:
+                SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
             itemCount: snapshot.data!.length,
-            itemBuilder: (context, index) {
+            itemBuilder: (BuildContext context, int index) {
               Artwork artwork = snapshot.data![index];
               return GestureDetector(
                 onTap: () => Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => ArtworkDetailPage(artwork: artwork),
-                  ),
+                      builder: (context) =>
+                          ArtworkDetailPage(artwork: artwork)),
                 ),
                 child: GridTile(
                   footer: GridTileBar(
                     backgroundColor: Colors.black45,
                     title: Text(artwork.title),
                     subtitle: Text(artwork.artistName),
-                    // Add action icons for edit and delete
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                          icon: Icon(Icons.edit, color: Colors.white),
-                          onPressed: () {
-                            // Navigate to edit page or show edit dialog
-                            _editArtwork(context, artwork);
-                          },
-                        ),
-                        IconButton(
-                          icon: Icon(Icons.delete, color: Colors.white),
-                          onPressed: () {
-                            // Confirm deletion and delete artwork
-                            _deleteArtwork(context, artwork.id);
-                          },
-                        ),
-                      ],
-                    ),
+                    trailing: _isLoggedIn
+                        ? Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                icon: Icon(Icons.edit, color: Colors.white),
+                                onPressed: () => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          EditArtworkPage(artwork: artwork)),
+                                ),
+                              ),
+                              IconButton(
+                                icon: Icon(Icons.delete, color: Colors.white),
+                                onPressed: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) => AlertDialog(
+                                      title: Text('Delete Artwork'),
+                                      content: Text(
+                                          'Are you sure you want to delete ${artwork.title}?'),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                          },
+                                          child: Text('Cancel'),
+                                        ),
+                                        TextButton(
+                                          onPressed: () {
+                                            DatabaseHelper.instance
+                                                .deleteArtwork(artwork.id!);
+                                            _refreshArtworkList();
+                                            _futureBuilderKey = UniqueKey();
+                                            Navigator.pop(context);
+                                          },
+                                          child: Text('Delete'),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                },
+                              ),
+                            ],
+                          )
+                        : null,
                   ),
                   child: Image.network(artwork.imageUrl, fit: BoxFit.cover),
                 ),
@@ -156,20 +219,18 @@ class HomePageState extends State<HomePage> {
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => const AddArtworkPage())).then((_) {
-            setState(() {
-              _futureBuilderKey = UniqueKey();
-              _refreshArtworkList();
-            });
-          });
-        },
-        child: const Icon(Icons.add),
-      ),
+      floatingActionButton: _isLoggedIn
+          ? FloatingActionButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const AddArtworkPage()),
+                );
+              },
+              child: Icon(Icons.add),
+            )
+          : null,
     );
   }
 }
