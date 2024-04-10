@@ -56,10 +56,11 @@ class DatabaseHelper {
   }
 
   Future<void> _insertDefaultUser(Database db) async {
-    final List<Map<String, dynamic>> users = await db
-        .query(userTable, where: '$colUsername = ?', whereArgs: [str_username]);
+    final List<Map<String, dynamic>> users = await db.query(userTable,
+        where: '$colUsername = ?', whereArgs: [AppStrings.username]);
     if (users.isEmpty) {
-      await createUser(str_name, str_username, str_password);
+      await createUser(
+          AppStrings.name, AppStrings.username, AppStrings.password);
     }
   }
 

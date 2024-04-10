@@ -41,9 +41,9 @@ class ArtworkDetailPage extends StatelessWidget {
                   child: Column(
                     children: [
                       DisqusComments(
-                        disqusShortname: disqusShortname,
+                        disqusShortname: AppStrings.disqusShortname,
                         identifier: '${artwork.id}',
-                        url: '$disqusUrl/artwork/${artwork.id}',
+                        url: '${AppStrings.disqusUrl}/artwork/${artwork.id}',
                       ),
                     ],
                   ),

@@ -20,7 +20,7 @@ class ArtfolioApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: appTitle,
+      title: AppStrings.appTitle,
       theme: appTheme,
       home: const HomePage(),
     );
@@ -59,8 +59,8 @@ class HomePageState extends State<HomePage> {
   }
 
   void _login() {
-    if (_usernameController.text == str_username &&
-        _passwordController.text == str_password) {
+    if (_usernameController.text == AppStrings.username &&
+        _passwordController.text == AppStrings.password) {
       _toggleLoginState();
       Navigator.pop(context);
     } else {
@@ -78,7 +78,7 @@ class HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(homePageTitle),
+        title: Text(AppStrings.homePageTitle),
         actions: [
           IconButton(
             icon: Icon(_isLoggedIn ? Icons.logout : Icons.login),
