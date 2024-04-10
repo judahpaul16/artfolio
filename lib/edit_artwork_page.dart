@@ -2,30 +2,32 @@ import 'package:flutter/material.dart';
 import 'utils/db_helper.dart';
 import 'models/artwork.dart';
 
-class AddArtworkPage extends StatefulWidget {
-  const AddArtworkPage({Key? key}) : super(key: key);
+class EditArtworkPage extends StatefulWidget {
+  final Artwork artwork;
+
+  const EditArtworkPage({Key? key, required this.artwork}) : super(key: key);
 
   @override
-  _AddArtworkPageState createState() => _AddArtworkPageState();
+  EditArtworkPageState createState() => EditArtworkPageState();
 }
 
-class _AddArtworkPageState extends State<AddArtworkPage> {
+class EditArtworkPageState extends State<EditArtworkPage> {
   final _formKey = GlobalKey<FormState>();
-  final titleController = TextEditingController();
-  final artistNameController = TextEditingController();
-  final imageUrlController = TextEditingController();
-  final descriptionController = TextEditingController();
+  late TextEditingController titleController;
+  late TextEditingController artistNameController;
+  late TextEditingController imageUrlController;
+  late TextEditingController descriptionController;
 
-  String ensureHttpScheme(String url) {
-    if (!url.startsWith(RegExp(r'https?://'))) {
-      return 'https://$url';
-    }
-    return url;
-  }
-
-  bool isValidUrl(String url) {
-    final uri = Uri.tryParse(url);
-    return uri != null && (uri.scheme == 'http' || uri.scheme == 'https');
+  @override
+  void initState() {
+    super.initState();
+    // Initialize text controllers with the current artwork details
+    titleController = TextEditingController(text: widget.artwork.title);
+    artistNameController =
+        TextEditingController(text: widget.artwork.artistName);
+    imageUrlController = TextEditingController(text: widget.artwork.imageUrl);
+    descriptionController =
+        TextEditingController(text: widget.artwork.description ?? '');
   }
 
   @override
@@ -38,26 +40,24 @@ class _AddArtworkPageState extends State<AddArtworkPage> {
     super.dispose();
   }
 
-  void _saveArtwork() {
-    final String imageUrl = ensureHttpScheme(imageUrlController.text);
-    if (_formKey.currentState!.validate() && isValidUrl(imageUrl)) {
-      final artwork = Artwork(
+  void _updateArtwork() {
+    if (_formKey.currentState!.validate()) {
+      // Update the Artwork object
+      Artwork updatedArtwork = Artwork(
+        id: widget.artwork.id, // Keep the original ID
         title: titleController.text,
         artistName: artistNameController.text,
-        imageUrl: imageUrl,
+        imageUrl: imageUrlController.text,
         description: descriptionController.text,
-        id: null,
       );
 
-      DatabaseHelper.instance.insertArtwork(artwork).then((_) {
+      DatabaseHelper.instance.updateArtwork(updatedArtwork).then((_) {
         Navigator.pop(context, true);
       }).catchError((error) {
-        print("Error saving artwork: $error");
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error updating artwork: $error')),
+        );
       });
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter a valid URL.')),
-      );
     }
   }
 
@@ -65,7 +65,7 @@ class _AddArtworkPageState extends State<AddArtworkPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add New Artwork'),
+        title: const Text('Edit Artwork'),
       ),
       body: Form(
         key: _formKey,
@@ -75,7 +75,7 @@ class _AddArtworkPageState extends State<AddArtworkPage> {
             children: <Widget>[
               TextFormField(
                 controller: titleController,
-                decoration: InputDecoration(labelText: 'Title'),
+                decoration: const InputDecoration(labelText: 'Title'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter a title';
@@ -83,9 +83,10 @@ class _AddArtworkPageState extends State<AddArtworkPage> {
                   return null;
                 },
               ),
+              // Repeat for other fields
               TextFormField(
                 controller: artistNameController,
-                decoration: InputDecoration(labelText: 'Artist Name'),
+                decoration: const InputDecoration(labelText: 'Artist Name'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter the artist\'s name';
@@ -95,27 +96,18 @@ class _AddArtworkPageState extends State<AddArtworkPage> {
               ),
               TextFormField(
                 controller: imageUrlController,
-                decoration: InputDecoration(labelText: 'Image URL'),
+                decoration: const InputDecoration(labelText: 'Image URL'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter an image URL';
-                  }
-                  if (!isValidUrl(ensureHttpScheme(value))) {
-                    return 'Please enter a valid URL with http or https';
                   }
                   return null;
                 },
               ),
               TextFormField(
                 controller: descriptionController,
-                decoration: InputDecoration(labelText: 'Description'),
+                decoration: const InputDecoration(labelText: 'Description'),
                 maxLines: 5,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a description';
-                  }
-                  return null;
-                },
               ),
               Padding(
                 padding: const EdgeInsets.only(top: 20.0),
@@ -123,11 +115,10 @@ class _AddArtworkPageState extends State<AddArtworkPage> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Theme.of(context).colorScheme.secondary,
                   ),
-                  onPressed: _saveArtwork,
-                  child: const Text(
-                    'Save Artwork',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                  ),
+                  onPressed: _updateArtwork,
+                  child: const Text('Update Artwork',
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                 ),
               ),
             ],

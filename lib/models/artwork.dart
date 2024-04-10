@@ -3,12 +3,14 @@ class Artwork {
   final String title;
   final String imageUrl;
   final String artistName;
+  final String description;
 
   Artwork({
     this.id,
     required this.title,
     required this.imageUrl,
     required this.artistName,
+    required this.description,
   });
 
   Map<String, dynamic> toMap() {
@@ -16,6 +18,7 @@ class Artwork {
       'title': title,
       'imageUrl': imageUrl,
       'artistName': artistName,
+      'description': description,
     };
   }
 
@@ -25,6 +28,7 @@ class Artwork {
       title: map['title'],
       imageUrl: map['imageUrl'],
       artistName: map['artistName'],
+      description: map['description'],
     );
   }
 }

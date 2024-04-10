@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'artwork.dart';
+import 'models/disqus_comments.dart';
+import 'models/artwork.dart';
 
 class ArtworkDetailPage extends StatelessWidget {
   final Artwork artwork;
@@ -8,6 +9,8 @@ class ArtworkDetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double screenHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(artwork.title),
@@ -17,17 +20,28 @@ class ArtworkDetailPage extends StatelessWidget {
           children: [
             Image.network(artwork.imageUrl),
             Padding(
-              padding: EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(8.0),
               child: Text(
                 artwork.artistName,
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                style:
+                    const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
             ),
-            const Padding(
-              padding: EdgeInsets.all(8.0),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
               child: Text(
-                'Artwork details or description here...',
-                style: TextStyle(fontSize: 16),
+                artwork.description,
+                style: const TextStyle(fontSize: 16),
+              ),
+            ),
+            SizedBox(
+              height: screenHeight * 0.4,
+              child: Expanded(
+                child: DisqusComments(
+                  disqusShortname: 'artfolio-1',
+                  identifier: 'artwork-${artwork.id}',
+                  url: 'https://github.com/judahpaul16/artfolio',
+                ),
               ),
             ),
           ],
