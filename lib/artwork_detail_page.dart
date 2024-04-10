@@ -1,3 +1,4 @@
+import 'package:artfolio/utils/strings.dart';
 import 'package:flutter/material.dart';
 import 'models/disqus_comments.dart';
 import 'models/artwork.dart';
@@ -40,9 +41,9 @@ class ArtworkDetailPage extends StatelessWidget {
                   child: Column(
                     children: [
                       DisqusComments(
-                        disqusShortname: 'artfolio-1',
-                        identifier: 'article-identifier-${artwork.id}',
-                        url: 'https://github.com/judahpaul16/artfolio',
+                        disqusShortname: disqusShortname,
+                        identifier: '${artwork.id}',
+                        url: '$disqusUrl/artwork/${artwork.id}',
                       ),
                     ],
                   ),
