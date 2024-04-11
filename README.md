@@ -27,13 +27,15 @@ To get started with Artfolio, follow these steps:
     flutter run
     ```
 
+The default username and password for the app are `admin` and `admin123` respectively. You can change these values in the `assets/settings.json` file.
+
 ## Customization 🎨
 Artfolio is designed to be easily customizable to match your personal brand and style. Here are a few ways you can customize the app:
 
 - **Colors**: Change the primary and accent colors in the `theme.dart` file.
 - **Fonts**: Update the font styles and sizes in the `theme.dart` file.
 - **Images**: Replace the branding images in the `assets` directory with your own images.
-- **Text**: Update the text content in the `strings.dart` file to reflect your personal information.
+- **Text**: Update the text content in the `assets/settings.json` file to reflect your personal information.
 
 ## Contributing 🤝
 Artfolio is an open-source project and contributions are always welcome! To contribute to the project, follow these steps:

@@ -1,14 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:artfolio/utils/db_helper.dart';
 import 'package:artfolio/models/artwork.dart';
-import 'package:artfolio/utils/strings.dart';
+import 'package:artfolio/utils/settings.dart';
 import 'package:artfolio/utils/theme.dart';
 import 'package:artfolio/artwork_detail_page.dart';
 import 'package:artfolio/edit_artwork_page.dart';
 import 'package:artfolio/add_artwork_page.dart';
+import 'package:artfolio/profile_page.dart';
+import 'package:artfolio/buy_coffee_page.dart';
+import 'package:permission_handler/permission_handler.dart';
+
+Future<void> requestStoragePermission() async {
+  var status = await Permission.storage.status;
+  if (!status.isGranted) {
+    await Permission.storage.request();
+  }
+}
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await requestStoragePermission();
+  await AppStrings.init();
   // Careful uncommenting this line, it will clear the database
   // await DatabaseHelper.instance.clearDatabase();
   runApp(const ArtfolioApp());
@@ -49,7 +61,10 @@ class HomePageState extends State<HomePage> {
   }
 
   void _refreshArtworkList() {
-    _artworkListFuture = DatabaseHelper.instance.getArtworks();
+    setState(() {
+      _futureBuilderKey = UniqueKey();
+      _artworkListFuture = DatabaseHelper.instance.getArtworks();
+    });
   }
 
   void _toggleLoginState() {
@@ -65,6 +80,11 @@ class HomePageState extends State<HomePage> {
       Navigator.pop(context);
     } else {
       Navigator.pop(context);
+      // print all variables
+      // print('username: ${_usernameController.text}');
+      // print('password: ${_passwordController.text}');
+      // print('AppStrings.username: ${AppStrings.username}');
+      // print('AppStrings.password: ${AppStrings.password}');
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Invalid username or password'),
@@ -140,6 +160,123 @@ class HomePageState extends State<HomePage> {
           ),
         ],
       ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            Container(
+              height: 200,
+              child: DrawerHeader(
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.secondaryContainer,
+                ),
+                child: Align(
+                  alignment: Alignment.center,
+                  child: Column(
+                    children: [
+                      const CircleAvatar(
+                        backgroundImage:
+                            AssetImage('assets/images/profile.jpg'),
+                        radius: 50,
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        AppStrings.homePageTitle,
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.primary,
+                          fontSize: 20,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            if (_isLoggedIn)
+              ListTile(
+                title: const Text('Edit Profile'),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const ProfilePage()));
+                },
+              ),
+            ListTile(
+              title: const Text('Buy me a coffee'),
+              onTap: () {
+                var url = AppStrings.buyCoffeeUrl;
+                Navigator.pop(context);
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => BuyCoffeePage(url: url)));
+              },
+            ),
+            ListTile(
+              title: Text(_isLoggedIn ? 'Logout' : 'Admin Login'),
+              onTap: () {
+                if (_isLoggedIn) {
+                  _toggleLoginState();
+                } else {
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: const Text('Admin Login'),
+                      content: Form(
+                        key: _formKey,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            TextFormField(
+                              controller: _usernameController,
+                              decoration:
+                                  const InputDecoration(labelText: 'Username'),
+                              validator: (value) {
+                                if (value?.isEmpty ?? true) {
+                                  return 'Please enter your username';
+                                }
+                                return null;
+                              },
+                            ),
+                            TextFormField(
+                              controller: _passwordController,
+                              obscureText: true,
+                              decoration:
+                                  const InputDecoration(labelText: 'Password'),
+                              validator: (value) {
+                                if (value?.isEmpty ?? true) {
+                                  return 'Please enter your password';
+                                }
+                                return null;
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: const Text('Cancel'),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            if (_formKey.currentState?.validate() ?? false) {
+                              _login();
+                            }
+                          },
+                          child: const Text('Login'),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+              },
+            ),
+          ],
+        ),
+      ),
       body: FutureBuilder<List<Artwork>>(
         key: _futureBuilderKey,
         future: _artworkListFuture,
@@ -170,43 +307,12 @@ class HomePageState extends State<HomePage> {
                             children: [
                               IconButton(
                                 icon: Icon(Icons.edit, color: Colors.white),
-                                onPressed: () => Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          EditArtworkPage(artwork: artwork)),
-                                ),
+                                onPressed: () => _editArtwork(context, artwork),
                               ),
                               IconButton(
                                 icon: Icon(Icons.delete, color: Colors.white),
-                                onPressed: () {
-                                  showDialog(
-                                    context: context,
-                                    builder: (context) => AlertDialog(
-                                      title: Text('Delete Artwork'),
-                                      content: Text(
-                                          'Are you sure you want to delete ${artwork.title}?'),
-                                      actions: [
-                                        TextButton(
-                                          onPressed: () {
-                                            Navigator.pop(context);
-                                          },
-                                          child: Text('Cancel'),
-                                        ),
-                                        TextButton(
-                                          onPressed: () {
-                                            DatabaseHelper.instance
-                                                .deleteArtwork(artwork.id!);
-                                            _refreshArtworkList();
-                                            _futureBuilderKey = UniqueKey();
-                                            Navigator.pop(context);
-                                          },
-                                          child: Text('Delete'),
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                },
+                                onPressed: () =>
+                                    _confirmDelete(context, artwork),
                               ),
                             ],
                           )
@@ -222,15 +328,74 @@ class HomePageState extends State<HomePage> {
       floatingActionButton: _isLoggedIn
           ? FloatingActionButton(
               onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const AddArtworkPage()),
-                );
+                _addArtwork(context);
               },
-              child: Icon(Icons.add),
+              child: const Icon(Icons.add),
             )
           : null,
     );
+  }
+
+  void _confirmDelete(BuildContext context, Artwork artwork) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Delete Artwork'),
+        content: Text('Are you sure you want to delete ${artwork.title}?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () async {
+              await DatabaseHelper.instance.deleteArtwork(artwork.id!);
+              Navigator.pop(context);
+              _refreshArtworkList();
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Artwork deleted'),
+                  backgroundColor: Colors.red,
+                ),
+              );
+            },
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _addArtwork(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const AddArtworkPage()),
+    ).then((value) {
+      if (value == true) {
+        _refreshArtworkList();
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Artwork added'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    });
+  }
+
+  void _editArtwork(BuildContext context, Artwork artwork) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => EditArtworkPage(artwork: artwork)),
+    ).then((_) {
+      _refreshArtworkList();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Artwork updated'),
+          backgroundColor: Colors.blue,
+        ),
+      );
+    });
   }
 }

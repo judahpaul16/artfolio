@@ -28,6 +28,23 @@ class _AddArtworkPageState extends State<AddArtworkPage> {
     return uri != null && (uri.scheme == 'http' || uri.scheme == 'https');
   }
 
+  bool _isImageUrl(String url) {
+    try {
+      var img = NetworkImage(url).resolve(const ImageConfiguration());
+      var isImage = false;
+      img.addListener(ImageStreamListener((info, call) {
+        isImage = true;
+        return;
+      }, onError: (dynamic exception, StackTrace? stackTrace) {
+        isImage = false;
+        return;
+      }));
+      return isImage;
+    } catch (e) {
+      return false;
+    }
+  }
+
   @override
   void dispose() {
     // Dispose of the controllers when the widget is removed from the widget tree
@@ -40,7 +57,7 @@ class _AddArtworkPageState extends State<AddArtworkPage> {
 
   void _saveArtwork() {
     final String imageUrl = ensureHttpScheme(imageUrlController.text);
-    if (_formKey.currentState!.validate() && isValidUrl(imageUrl)) {
+    if (_formKey.currentState!.validate()) {
       final artwork = Artwork(
         title: titleController.text,
         artistName: artistNameController.text,
@@ -49,15 +66,21 @@ class _AddArtworkPageState extends State<AddArtworkPage> {
         id: null,
       );
 
-      DatabaseHelper.instance.insertArtwork(artwork).then((_) {
-        Navigator.pop(context, true);
-      }).catchError((error) {
-        print("Error saving artwork: $error");
-      });
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter a valid URL.')),
-      );
+      if (isValidUrl(imageUrl) && _isImageUrl(artwork.imageUrl)) {
+        DatabaseHelper.instance.insertArtwork(artwork).then((_) {
+          Navigator.pop(context, true);
+        }).catchError((error) {
+          const SnackBar(
+              content: Text('Failed to save artwork'),
+              backgroundColor: Colors.red);
+        });
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text('Please enter a valid URL.'),
+              backgroundColor: Colors.red),
+        );
+      }
     }
   }
 
