@@ -40,24 +40,63 @@ class EditArtworkPageState extends State<EditArtworkPage> {
     super.dispose();
   }
 
+  String ensureHttpScheme(String url) {
+    if (!url.startsWith(RegExp(r'https?://'))) {
+      return 'https://$url';
+    }
+    return url;
+  }
+
+  bool isValidUrl(String url) {
+    final uri = Uri.tryParse(url);
+    return uri != null && (uri.scheme == 'http' || uri.scheme == 'https');
+  }
+
+  bool _isImageUrl(String url) {
+    try {
+      var img = NetworkImage(url).resolve(const ImageConfiguration());
+      var isImage = false;
+      img.addListener(ImageStreamListener((info, call) {
+        isImage = true;
+        return;
+      }, onError: (dynamic exception, StackTrace? stackTrace) {
+        isImage = false;
+        return;
+      }));
+      return isImage;
+    } catch (e) {
+      return false;
+    }
+  }
+
   void _updateArtwork() {
     if (_formKey.currentState!.validate()) {
-      // Update the Artwork object
       Artwork updatedArtwork = Artwork(
-        id: widget.artwork.id, // Keep the original ID
+        id: widget.artwork.id,
         title: titleController.text,
         artistName: artistNameController.text,
         imageUrl: imageUrlController.text,
         description: descriptionController.text,
       );
-
-      DatabaseHelper.instance.updateArtwork(updatedArtwork).then((_) {
-        Navigator.pop(context, true);
-      }).catchError((error) {
+      if (_isImageUrl(updatedArtwork.imageUrl) &&
+          isValidUrl(updatedArtwork.imageUrl)) {
+        DatabaseHelper.instance.updateArtwork(updatedArtwork).then((_) {
+          Navigator.pop(context, true);
+        }).catchError((error) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+                content: Text('Error updating artwork: $error'),
+                backgroundColor: Colors.red),
+          );
+        });
+      } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error updating artwork: $error')),
+          const SnackBar(
+            content: Text('Please enter a valid image URL'),
+            backgroundColor: Colors.red,
+          ),
         );
-      });
+      }
     }
   }
 
@@ -100,6 +139,9 @@ class EditArtworkPageState extends State<EditArtworkPage> {
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter an image URL';
+                  }
+                  if (!isValidUrl(ensureHttpScheme(value))) {
+                    return 'Please enter a valid URL with http or https';
                   }
                   return null;
                 },

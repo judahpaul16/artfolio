@@ -2,7 +2,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:crypto/crypto.dart';
 import '../models/artwork.dart';
-import '../utils/strings.dart';
+import '../utils/settings.dart';
 import 'dart:convert';
 import 'dart:async';
 import 'dart:io';
@@ -21,6 +21,7 @@ class DatabaseHelper {
 
   String userTable = 'userTable';
   String colUserId = 'userId';
+  String colFullName = 'fullname';
   String colUsername = 'username';
   String colPassword = 'password';
 
@@ -33,15 +34,15 @@ class DatabaseHelper {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
     String path = '${documentsDirectory.path}/artfolio.db';
     return await openDatabase(path,
-        version: 3, onUpgrade: _onUpgrade, onCreate: _createDb);
+        version: 5, onUpgrade: _onUpgrade, onCreate: _createDb);
   }
 
   void _createDb(Database db, int version) async {
     await db.execute(
-      'CREATE TABLE $artworksTable($colId INTEGER PRIMARY KEY AUTOINCREMENT, $colTitle TEXT, $colImageUrl TEXT, $colArtistName TEXT, $colDescription TEXT)',
+      'CREATE TABLE $userTable($colUserId INTEGER PRIMARY KEY AUTOINCREMENT, $colFullName TEXT, $colUsername TEXT, $colPassword TEXT)',
     );
     await db.execute(
-      'CREATE TABLE $userTable($colUserId INTEGER PRIMARY KEY AUTOINCREMENT, $colUsername TEXT UNIQUE, $colPassword TEXT)',
+      'CREATE TABLE $artworksTable($colId INTEGER PRIMARY KEY AUTOINCREMENT, $colTitle TEXT, $colImageUrl TEXT, $colArtistName TEXT, $colDescription TEXT)',
     );
     _insertDefaultUser(db);
   }
@@ -49,7 +50,10 @@ class DatabaseHelper {
   void _onUpgrade(Database db, int oldVersion, int newVersion) async {
     if (newVersion > oldVersion) {
       await db.execute(
-        'CREATE TABLE IF NOT EXISTS $userTable($colUserId INTEGER PRIMARY KEY AUTOINCREMENT, $colUsername TEXT UNIQUE, $colPassword TEXT)',
+        'CREATE TABLE IF NOT EXISTS $userTable($colUserId INTEGER PRIMARY KEY AUTOINCREMENT, $colFullName TEXT, $colUsername TEXT, $colPassword TEXT)',
+      );
+      await db.execute(
+        'CREATE TABLE IF NOT EXISTS $artworksTable($colId INTEGER PRIMARY KEY AUTOINCREMENT, $colTitle TEXT, $colImageUrl TEXT, $colArtistName TEXT, $colDescription TEXT)',
       );
     }
     _insertDefaultUser(db);
@@ -60,7 +64,7 @@ class DatabaseHelper {
         where: '$colUsername = ?', whereArgs: [AppStrings.username]);
     if (users.isEmpty) {
       await createUser(
-          AppStrings.name, AppStrings.username, AppStrings.password);
+          AppStrings.fullname, AppStrings.username, AppStrings.password);
     }
   }
 
@@ -68,14 +72,27 @@ class DatabaseHelper {
     return sha256.convert(utf8.encode(password)).toString();
   }
 
-  Future<int> createUser(String name, String username, String password) async {
+  Future<int> createUser(
+      String fullname, String username, String password) async {
     Database db = await database;
     String hashedPassword = _hashPassword(password);
     return await db.insert(userTable, {
-      colArtistName: name,
+      colFullName: fullname,
       colUsername: username,
       colPassword: hashedPassword,
     });
+  }
+
+  Future<int> updateUser(
+      String fullname, String username, String password) async {
+    Database db = await database;
+    String hashedPassword = _hashPassword(password);
+    return await db.update(
+      userTable,
+      {colPassword: hashedPassword, colFullName: fullname},
+      where: '$colUsername = ?',
+      whereArgs: [username],
+    );
   }
 
   Future<bool> authenticateUser(String username, String password) async {
@@ -120,5 +137,11 @@ class DatabaseHelper {
       artworkList.add(Artwork.fromMap(artworkMap));
     }
     return artworkList;
+  }
+
+  Future<void> clearDatabase() async {
+    Directory documentsDirectory = await getApplicationDocumentsDirectory();
+    String path = '${documentsDirectory.path}/artfolio.db';
+    await deleteDatabase(path);
   }
 }

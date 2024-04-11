@@ -1,4 +1,4 @@
-import 'package:artfolio/utils/strings.dart';
+import 'package:artfolio/utils/settings.dart';
 import 'package:flutter/material.dart';
 import 'models/disqus_comments.dart';
 import 'models/artwork.dart';
