@@ -10,7 +10,11 @@ class AppSettings {
       "password": "admin123",
       "disqusShortname": "artfolio-1",
       "disqusUrl": "https://github.com/judahpaul16/artfolio",
-      "buyCoffeeUrl": "https://paypal.me/judahpaul"
+      "buyCoffeeUrl": "https://paypal.me/judahpaul",
+      "pinterestUrl": "https://pinterest.com/",
+      "facebookUrl": "https://facebook.com/",
+      "instagramUrl": "https://instagram.com/",
+      "dribbbleUrl": "https://dribbble.com/",
     };
   }
 
@@ -48,4 +52,16 @@ class AppStrings {
   static String get buyCoffeeUrl => AppSettings.settings['buyCoffeeUrl'];
   static set buyCoffeeUrl(String value) =>
       AppSettings.updateSetting('buyCoffeeUrl', value);
+  static String get pinterestUrl => AppSettings.settings['pinterestUrl'];
+  static set pinterestUrl(String value) =>
+      AppSettings.updateSetting('pinterestUrl', value);
+  static String get facebookUrl => AppSettings.settings['facebookUrl'];
+  static set facebookUrl(String value) =>
+      AppSettings.updateSetting('facebookUrl', value);
+  static String get instagramUrl => AppSettings.settings['instagramUrl'];
+  static set instagramUrl(String value) =>
+      AppSettings.updateSetting('instagramUrl', value);
+  static String get dribbbleUrl => AppSettings.settings['dribbbleUrl'];
+  static set dribbbleUrl(String value) =>
+      AppSettings.updateSetting('dribbbleUrl', value);
 }

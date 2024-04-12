@@ -1,4 +1,6 @@
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:artfolio/utils/settings.dart';
+import 'package:artfolio/webview_page.dart';
 import 'package:flutter/material.dart';
 import 'models/disqus_comments.dart';
 import 'models/artwork.dart';
@@ -30,6 +32,75 @@ class ArtworkDetailPage extends StatelessWidget {
                     artwork.imageUrl,
                     fit: BoxFit.cover,
                   ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // social media buttons
+                  IconButton(
+                    icon: const Icon(FontAwesomeIcons.pinterest),
+                    onPressed: () {
+                      // open pinterest webview
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => WebViewPage(
+                            title: 'Pinterest',
+                            url: AppStrings.pinterestUrl,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                  IconButton(
+                    icon: const Icon(FontAwesomeIcons.facebook),
+                    onPressed: () {
+                      // open facebook webview
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => WebViewPage(
+                            title: 'Facebook',
+                            url: AppStrings.facebookUrl,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                  IconButton(
+                    icon: const Icon(FontAwesomeIcons.instagram),
+                    onPressed: () {
+                      // open instagram webview
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => WebViewPage(
+                            title: 'Instagram',
+                            url: AppStrings.instagramUrl,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                  IconButton(
+                    icon: const Icon(FontAwesomeIcons.dribbble),
+                    onPressed: () {
+                      // open dribbble webview
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => WebViewPage(
+                            title: 'Dribbble',
+                            url: AppStrings.dribbbleUrl,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(

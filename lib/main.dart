@@ -7,7 +7,7 @@ import 'package:artfolio/artwork_detail_page.dart';
 import 'package:artfolio/edit_artwork_page.dart';
 import 'package:artfolio/add_artwork_page.dart';
 import 'package:artfolio/profile_page.dart';
-import 'package:artfolio/buy_coffee_page.dart';
+import 'package:artfolio/webview_page.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'dart:io';
 
@@ -118,7 +118,8 @@ class HomePageState extends State<HomePage> {
                         children: [
                           TextFormField(
                             controller: _usernameController,
-                            decoration: const InputDecoration(labelText: 'Username'),
+                            decoration:
+                                const InputDecoration(labelText: 'Username'),
                             validator: (value) {
                               if (value?.isEmpty ?? true) {
                                 return 'Please enter your username';
@@ -129,7 +130,8 @@ class HomePageState extends State<HomePage> {
                           TextFormField(
                             controller: _passwordController,
                             obscureText: true,
-                            decoration: const InputDecoration(labelText: 'Password'),
+                            decoration:
+                                const InputDecoration(labelText: 'Password'),
                             validator: (value) {
                               if (value?.isEmpty ?? true) {
                                 return 'Please enter your password';
@@ -272,7 +274,8 @@ class HomePageState extends State<HomePage> {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => BuyCoffeePage(url: url)));
+                        builder: (context) =>
+                            WebViewPage(title: "Buy Me a Coffee", url: url)));
               },
             ),
           ],
@@ -286,8 +289,8 @@ class HomePageState extends State<HomePage> {
             return const Center(child: CircularProgressIndicator());
           }
           return GridView.builder(
-            gridDelegate:
-                const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2),
             itemCount: snapshot.data!.length,
             itemBuilder: (BuildContext context, int index) {
               Artwork artwork = snapshot.data![index];
@@ -308,11 +311,13 @@ class HomePageState extends State<HomePage> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               IconButton(
-                                icon: const Icon(Icons.edit, color: Colors.white),
+                                icon:
+                                    const Icon(Icons.edit, color: Colors.white),
                                 onPressed: () => _editArtwork(context, artwork),
                               ),
                               IconButton(
-                                icon: const Icon(Icons.delete, color: Colors.white),
+                                icon: const Icon(Icons.delete,
+                                    color: Colors.white),
                                 onPressed: () =>
                                     _confirmDelete(context, artwork),
                               ),
