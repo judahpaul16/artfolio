@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'utils/db_helper.dart';
@@ -8,10 +7,10 @@ class AddArtworkPage extends StatefulWidget {
   const AddArtworkPage({Key? key}) : super(key: key);
 
   @override
-  _AddArtworkPageState createState() => _AddArtworkPageState();
+  AddArtworkPageState createState() => AddArtworkPageState();
 }
 
-class _AddArtworkPageState extends State<AddArtworkPage> {
+class AddArtworkPageState extends State<AddArtworkPage> {
   final _formKey = GlobalKey<FormState>();
   final titleController = TextEditingController();
   final artistNameController = TextEditingController();

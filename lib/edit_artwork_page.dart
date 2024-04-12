@@ -2,7 +2,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 import 'utils/db_helper.dart';
 import 'models/artwork.dart';
-import 'dart:io';
 
 class EditArtworkPage extends StatefulWidget {
   final Artwork artwork;
@@ -32,7 +31,7 @@ class EditArtworkPageState extends State<EditArtworkPage> {
         TextEditingController(text: widget.artwork.artistName);
     imageUrlController = TextEditingController(text: widget.artwork.imageUrl);
     descriptionController =
-        TextEditingController(text: widget.artwork.description ?? '');
+        TextEditingController(text: widget.artwork.description);
   }
 
   void _toggleUploadType(bool? value) {
