@@ -1,18 +1,17 @@
-import 'dart:convert';
-import 'dart:io';
-import 'package:path_provider/path_provider.dart';
-
 class AppSettings {
   static Map<String, dynamic> settings = {};
 
-  static Future<File> get _localFile async {
-    final directory = await getApplicationDocumentsDirectory();
-    return File('${directory.path}/settings.json');
-  }
-
   static Future<void> loadSettings() async {
-    final file = await _localFile;
-    settings = json.decode(await file.readAsString());
+    settings = {
+      "appTitle": "Artfolio",
+      "homePageTitle": "Artfolio Showcase",
+      "fullname": "Judah Paul",
+      "username": "admin",
+      "password": "admin123",
+      "disqusShortname": "artfolio-1",
+      "disqusUrl": "https://github.com/judahpaul16/artfolio",
+      "buyCoffeeUrl": "https://paypal.me/judahpaul"
+    };
   }
 
   static void updateSetting(String key, dynamic value) {
