@@ -6,7 +6,7 @@ import 'models/artwork.dart';
 class EditArtworkPage extends StatefulWidget {
   final Artwork artwork;
 
-  const EditArtworkPage({Key? key, required this.artwork}) : super(key: key);
+  const EditArtworkPage({super.key, required this.artwork});
 
   @override
   EditArtworkPageState createState() => EditArtworkPageState();

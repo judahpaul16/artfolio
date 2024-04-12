@@ -4,7 +4,7 @@ import 'utils/db_helper.dart';
 import 'models/artwork.dart';
 
 class AddArtworkPage extends StatefulWidget {
-  const AddArtworkPage({Key? key}) : super(key: key);
+  const AddArtworkPage({super.key});
 
   @override
   AddArtworkPageState createState() => AddArtworkPageState();

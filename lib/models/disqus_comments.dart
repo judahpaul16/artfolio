@@ -9,11 +9,11 @@ class DisqusComments extends StatefulWidget {
   final String url;
 
   const DisqusComments({
-    Key? key,
+    super.key,
     required this.disqusShortname,
     required this.identifier,
     required this.url,
-  }) : super(key: key);
+  });
 
   @override
   _DisqusCommentsState createState() => _DisqusCommentsState();

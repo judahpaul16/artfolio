@@ -3,13 +3,14 @@ import 'package:artfolio/utils/settings.dart';
 import 'package:artfolio/webview_page.dart';
 import 'package:flutter/material.dart';
 import 'models/disqus_comments.dart';
+import 'package:share/share.dart';
 import 'models/artwork.dart';
 import 'dart:io';
 
 class ArtworkDetailPage extends StatelessWidget {
   final Artwork artwork;
 
-  const ArtworkDetailPage({Key? key, required this.artwork}) : super(key: key);
+  const ArtworkDetailPage({super.key, required this.artwork});
 
   @override
   Widget build(BuildContext context) {
@@ -22,26 +23,77 @@ class ArtworkDetailPage extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            //check for file:// and http(s):// prefixes
-            !artwork.imageUrl.startsWith('http')
-                ? Image.file(
-                    File(artwork.imageUrl),
-                    fit: BoxFit.cover,
-                  )
-                : Image.network(
-                    artwork.imageUrl,
-                    fit: BoxFit.cover,
+            Stack(
+              children: [
+                // Display the artwork image
+                !artwork.imageUrl.startsWith('http')
+                    ? Image.file(
+                        File(artwork.imageUrl),
+                        fit: BoxFit.cover,
+                        height: screenHeight * 0.75,
+                        width: double.infinity,
+                      )
+                    : Image.network(
+                        artwork.imageUrl,
+                        fit: BoxFit.cover,
+                        height: screenHeight * 0.5,
+                        width: double.infinity,
+                      ),
+                // Share button at the bottom left of the image
+                Positioned(
+                  bottom: 16,
+                  left: 16,
+                  child: IconButton(
+                    icon: const Icon(FontAwesomeIcons.shareNodes,
+                        color: Colors.white),
+                    onPressed: () {
+                      Share.share(artwork.imageUrl);
+                    },
                   ),
+                ),
+                // Fullscreen button at the bottom right of the image
+                Positioned(
+                  bottom: 16,
+                  right: 16,
+                  child: IconButton(
+                    icon: const Icon(FontAwesomeIcons.expand,
+                        color: Colors.white),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => Scaffold(
+                            appBar: AppBar(
+                              title: Text(artwork.title),
+                            ),
+                            body: Center(
+                              child: !artwork.imageUrl.startsWith('http')
+                                  ? Image.file(
+                                      File(artwork.imageUrl),
+                                      fit: BoxFit.contain,
+                                    )
+                                  : Image.network(
+                                      artwork.imageUrl,
+                                      fit: BoxFit.contain,
+                                    ),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // social media buttons
+                  // Social media buttons
                   IconButton(
                     icon: const Icon(FontAwesomeIcons.pinterest),
                     onPressed: () {
-                      // open pinterest webview
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -56,7 +108,6 @@ class ArtworkDetailPage extends StatelessWidget {
                   IconButton(
                     icon: const Icon(FontAwesomeIcons.facebook),
                     onPressed: () {
-                      // open facebook webview
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -71,7 +122,6 @@ class ArtworkDetailPage extends StatelessWidget {
                   IconButton(
                     icon: const Icon(FontAwesomeIcons.instagram),
                     onPressed: () {
-                      // open instagram webview
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -86,7 +136,6 @@ class ArtworkDetailPage extends StatelessWidget {
                   IconButton(
                     icon: const Icon(FontAwesomeIcons.dribbble),
                     onPressed: () {
-                      // open dribbble webview
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -124,7 +173,7 @@ class ArtworkDetailPage extends StatelessWidget {
                       DisqusComments(
                         disqusShortname: AppStrings.disqusShortname,
                         identifier: '${artwork.id}',
-                        url: '${AppStrings.disqusUrl}/artwork/${artwork.id}',
+                        url: artwork.imageUrl,
                       ),
                     ],
                   ),

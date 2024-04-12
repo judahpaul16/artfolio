@@ -9,7 +9,6 @@ class AppSettings {
       "username": "admin",
       "password": "admin123",
       "disqusShortname": "artfolio-1",
-      "disqusUrl": "https://github.com/judahpaul16/artfolio",
       "buyCoffeeUrl": "https://paypal.me/judahpaul",
       "pinterestUrl": "https://pinterest.com/",
       "facebookUrl": "https://facebook.com/",
@@ -46,9 +45,6 @@ class AppStrings {
   static String get disqusShortname => AppSettings.settings['disqusShortname'];
   static set disqusShortname(String value) =>
       AppSettings.updateSetting('disqusShortname', value);
-  static String get disqusUrl => AppSettings.settings['disqusUrl'];
-  static set disqusUrl(String value) =>
-      AppSettings.updateSetting('disqusUrl', value);
   static String get buyCoffeeUrl => AppSettings.settings['buyCoffeeUrl'];
   static set buyCoffeeUrl(String value) =>
       AppSettings.updateSetting('buyCoffeeUrl', value);
