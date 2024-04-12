@@ -50,5 +50,9 @@
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This app would like to be able to browse your photos so you can upload them.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>This app would like to access the camera to upload photos.</string>
 </dict>
 </plist>

@@ -1,6 +1,8 @@
+import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 import 'utils/db_helper.dart';
 import 'models/artwork.dart';
+import 'dart:io';
 
 class EditArtworkPage extends StatefulWidget {
   final Artwork artwork;
@@ -17,6 +19,9 @@ class EditArtworkPageState extends State<EditArtworkPage> {
   late TextEditingController artistNameController;
   late TextEditingController imageUrlController;
   late TextEditingController descriptionController;
+  final ImagePicker _picker = ImagePicker();
+  XFile? imageFile;
+  bool useUrl = true;
 
   @override
   void initState() {
@@ -28,6 +33,21 @@ class EditArtworkPageState extends State<EditArtworkPage> {
     imageUrlController = TextEditingController(text: widget.artwork.imageUrl);
     descriptionController =
         TextEditingController(text: widget.artwork.description ?? '');
+  }
+
+  void _toggleUploadType(bool? value) {
+    setState(() {
+      useUrl = value ?? true;
+      imageUrlController.clear();
+      imageFile = null;
+    });
+  }
+
+  void _pickImage() async {
+    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+    setState(() {
+      imageFile = pickedFile;
+    });
   }
 
   @override
@@ -71,15 +91,17 @@ class EditArtworkPageState extends State<EditArtworkPage> {
 
   void _updateArtwork() {
     if (_formKey.currentState!.validate()) {
+      final String imageUrl = useUrl
+          ? ensureHttpScheme(imageUrlController.text)
+          : (imageFile != null ? imageFile!.path : '');
       Artwork updatedArtwork = Artwork(
         id: widget.artwork.id,
         title: titleController.text,
         artistName: artistNameController.text,
-        imageUrl: imageUrlController.text,
+        imageUrl: imageUrl,
         description: descriptionController.text,
       );
-      if (_isImageUrl(updatedArtwork.imageUrl) &&
-          isValidUrl(updatedArtwork.imageUrl)) {
+      if ((useUrl && isValidUrl(imageUrl)) || imageFile != null) {
         DatabaseHelper.instance.updateArtwork(updatedArtwork).then((_) {
           Navigator.pop(context, true);
         }).catchError((error) {
@@ -92,7 +114,7 @@ class EditArtworkPageState extends State<EditArtworkPage> {
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Please enter a valid image URL'),
+            content: Text('Please enter a valid URL or select a file.'),
             backgroundColor: Colors.red,
           ),
         );
@@ -108,9 +130,10 @@ class EditArtworkPageState extends State<EditArtworkPage> {
       ),
       body: Form(
         key: _formKey,
-        child: Padding(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.all(8.0),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               TextFormField(
                 controller: titleController,
@@ -122,7 +145,6 @@ class EditArtworkPageState extends State<EditArtworkPage> {
                   return null;
                 },
               ),
-              // Repeat for other fields
               TextFormField(
                 controller: artistNameController,
                 decoration: const InputDecoration(labelText: 'Artist Name'),
@@ -133,19 +155,52 @@ class EditArtworkPageState extends State<EditArtworkPage> {
                   return null;
                 },
               ),
-              TextFormField(
-                controller: imageUrlController,
-                decoration: const InputDecoration(labelText: 'Image URL'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter an image URL';
-                  }
-                  if (!isValidUrl(ensureHttpScheme(value))) {
-                    return 'Please enter a valid URL with http or https';
-                  }
-                  return null;
-                },
+              SwitchListTile(
+                title: const Text('Use URL for Image?',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        fontSize: 14)),
+                value: useUrl,
+                onChanged: _toggleUploadType,
+                activeColor: Theme.of(context).colorScheme.secondary,
+                inactiveThumbColor: Theme.of(context).colorScheme.tertiary,
+                inactiveTrackColor: Theme.of(context).colorScheme.primary,
               ),
+              if (useUrl)
+                TextFormField(
+                  controller: imageUrlController,
+                  decoration: InputDecoration(labelText: 'Image URL'),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter an image URL';
+                    }
+                    if (!isValidUrl(ensureHttpScheme(value)) ||
+                        !_isImageUrl(value)) {
+                      return 'Please enter a valid URL with http or https';
+                    }
+                    return null;
+                  },
+                ),
+              if (!useUrl)
+                Row(
+                  children: [
+                    ElevatedButton(
+                      onPressed: _pickImage,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Theme.of(context).colorScheme.tertiary,
+                      ),
+                      child: const Text('Select Image',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 14)),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(imageFile?.path.split('/').last ??
+                          'No file selected'),
+                    ),
+                  ],
+                ),
               TextFormField(
                 controller: descriptionController,
                 decoration: const InputDecoration(labelText: 'Description'),
