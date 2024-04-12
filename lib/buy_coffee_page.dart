@@ -9,7 +9,7 @@ class BuyCoffeePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Buy Me a Coffee'),
+        title: const Text('Buy Me a Coffee'),
       ),
       body: WebView(
         initialUrl: url,

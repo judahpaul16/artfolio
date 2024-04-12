@@ -110,7 +110,7 @@ class HomePageState extends State<HomePage> {
                 showDialog(
                   context: context,
                   builder: (context) => AlertDialog(
-                    title: Text('Login'),
+                    title: const Text('Login'),
                     content: Form(
                       key: _formKey,
                       child: Column(
@@ -118,7 +118,7 @@ class HomePageState extends State<HomePage> {
                         children: [
                           TextFormField(
                             controller: _usernameController,
-                            decoration: InputDecoration(labelText: 'Username'),
+                            decoration: const InputDecoration(labelText: 'Username'),
                             validator: (value) {
                               if (value?.isEmpty ?? true) {
                                 return 'Please enter your username';
@@ -129,7 +129,7 @@ class HomePageState extends State<HomePage> {
                           TextFormField(
                             controller: _passwordController,
                             obscureText: true,
-                            decoration: InputDecoration(labelText: 'Password'),
+                            decoration: const InputDecoration(labelText: 'Password'),
                             validator: (value) {
                               if (value?.isEmpty ?? true) {
                                 return 'Please enter your password';
@@ -143,7 +143,7 @@ class HomePageState extends State<HomePage> {
                     actions: [
                       TextButton(
                         onPressed: () => Navigator.pop(context),
-                        child: Text('Cancel'),
+                        child: const Text('Cancel'),
                       ),
                       TextButton(
                         onPressed: () {
@@ -151,7 +151,7 @@ class HomePageState extends State<HomePage> {
                             _login();
                           }
                         },
-                        child: Text('Login'),
+                        child: const Text('Login'),
                       ),
                     ],
                   ),
@@ -165,7 +165,7 @@ class HomePageState extends State<HomePage> {
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
-            Container(
+            SizedBox(
               height: 200,
               child: DrawerHeader(
                 decoration: BoxDecoration(
@@ -282,11 +282,12 @@ class HomePageState extends State<HomePage> {
         key: _futureBuilderKey,
         future: _artworkListFuture,
         builder: (context, snapshot) {
-          if (!snapshot.hasData)
-            return Center(child: CircularProgressIndicator());
+          if (!snapshot.hasData) {
+            return const Center(child: CircularProgressIndicator());
+          }
           return GridView.builder(
             gridDelegate:
-                SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+                const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
             itemCount: snapshot.data!.length,
             itemBuilder: (BuildContext context, int index) {
               Artwork artwork = snapshot.data![index];
@@ -307,11 +308,11 @@ class HomePageState extends State<HomePage> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               IconButton(
-                                icon: Icon(Icons.edit, color: Colors.white),
+                                icon: const Icon(Icons.edit, color: Colors.white),
                                 onPressed: () => _editArtwork(context, artwork),
                               ),
                               IconButton(
-                                icon: Icon(Icons.delete, color: Colors.white),
+                                icon: const Icon(Icons.delete, color: Colors.white),
                                 onPressed: () =>
                                     _confirmDelete(context, artwork),
                               ),
@@ -350,7 +351,7 @@ class HomePageState extends State<HomePage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Delete Artwork'),
+        title: const Text('Delete Artwork'),
         content: Text('Are you sure you want to delete ${artwork.title}?'),
         actions: [
           TextButton(

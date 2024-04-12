@@ -121,7 +121,7 @@ class AddArtworkPageState extends State<AddArtworkPage> {
             children: <Widget>[
               TextFormField(
                 controller: titleController,
-                decoration: InputDecoration(labelText: 'Title'),
+                decoration: const InputDecoration(labelText: 'Title'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter a title';
@@ -131,7 +131,7 @@ class AddArtworkPageState extends State<AddArtworkPage> {
               ),
               TextFormField(
                 controller: artistNameController,
-                decoration: InputDecoration(labelText: 'Artist Name'),
+                decoration: const InputDecoration(labelText: 'Artist Name'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter the artist\'s name';
@@ -154,7 +154,7 @@ class AddArtworkPageState extends State<AddArtworkPage> {
               if (useUrl)
                 TextFormField(
                   controller: imageUrlController,
-                  decoration: InputDecoration(labelText: 'Image URL'),
+                  decoration: const InputDecoration(labelText: 'Image URL'),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter an image URL';
@@ -187,7 +187,7 @@ class AddArtworkPageState extends State<AddArtworkPage> {
                 ),
               TextFormField(
                 controller: descriptionController,
-                decoration: InputDecoration(labelText: 'Description'),
+                decoration: const InputDecoration(labelText: 'Description'),
                 maxLines: 5,
                 validator: (value) {
                   if (value == null || value.isEmpty) {

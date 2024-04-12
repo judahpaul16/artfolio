@@ -80,7 +80,7 @@ class _DisqusCommentsState extends State<DisqusComments> {
   void _adjustHeightPeriodically() {
     _heightAdjustmentTimer?.cancel();
 
-    _heightAdjustmentTimer = Timer.periodic(Duration(seconds: 1), (timer) {
+    _heightAdjustmentTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       _controller
           .evaluateJavascript("document.body.scrollHeight;")
           .then((result) {

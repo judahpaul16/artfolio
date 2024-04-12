@@ -169,7 +169,7 @@ class EditArtworkPageState extends State<EditArtworkPage> {
               if (useUrl)
                 TextFormField(
                   controller: imageUrlController,
-                  decoration: InputDecoration(labelText: 'Image URL'),
+                  decoration: const InputDecoration(labelText: 'Image URL'),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter an image URL';

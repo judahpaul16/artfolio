@@ -54,7 +54,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   );
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                        content: Text('Profile updated'),
+                        content: const Text('Profile updated'),
                         backgroundColor: Colors.green.withOpacity(0.8)),
                   );
                   Navigator.pop(context);
