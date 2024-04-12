@@ -205,17 +205,6 @@ class HomePageState extends State<HomePage> {
                 },
               ),
             ListTile(
-              title: const Text('Buy me a coffee'),
-              onTap: () {
-                var url = AppStrings.buyCoffeeUrl;
-                Navigator.pop(context);
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => BuyCoffeePage(url: url)));
-              },
-            ),
-            ListTile(
               title: Text(_isLoggedIn ? 'Logout' : 'Admin Login'),
               onTap: () {
                 if (_isLoggedIn) {
@@ -273,6 +262,17 @@ class HomePageState extends State<HomePage> {
                     ),
                   );
                 }
+              },
+            ),
+            ListTile(
+              title: const Text('Buy me a coffee'),
+              onTap: () {
+                var url = AppStrings.buyCoffeeUrl;
+                Navigator.pop(context);
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => BuyCoffeePage(url: url)));
               },
             ),
           ],
