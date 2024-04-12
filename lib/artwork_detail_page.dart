@@ -2,6 +2,7 @@ import 'package:artfolio/utils/settings.dart';
 import 'package:flutter/material.dart';
 import 'models/disqus_comments.dart';
 import 'models/artwork.dart';
+import 'dart:io';
 
 class ArtworkDetailPage extends StatelessWidget {
   final Artwork artwork;
@@ -19,7 +20,16 @@ class ArtworkDetailPage extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            Image.network(artwork.imageUrl),
+            //check for file:// and http(s):// prefixes
+            !artwork.imageUrl.startsWith('http')
+                ? Image.file(
+                    File(artwork.imageUrl),
+                    fit: BoxFit.cover,
+                  )
+                : Image.network(
+                    artwork.imageUrl,
+                    fit: BoxFit.cover,
+                  ),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(

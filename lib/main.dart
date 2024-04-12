@@ -9,6 +9,7 @@ import 'package:artfolio/add_artwork_page.dart';
 import 'package:artfolio/profile_page.dart';
 import 'package:artfolio/buy_coffee_page.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'dart:io';
 
 Future<void> requestStoragePermission() async {
   var status = await Permission.storage.status;
@@ -318,7 +319,16 @@ class HomePageState extends State<HomePage> {
                           )
                         : null,
                   ),
-                  child: Image.network(artwork.imageUrl, fit: BoxFit.cover),
+                  child: //check for file:// and http(s):// prefixes
+                      !artwork.imageUrl.startsWith('http')
+                          ? Image.file(
+                              File(artwork.imageUrl),
+                              fit: BoxFit.cover,
+                            )
+                          : Image.network(
+                              artwork.imageUrl,
+                              fit: BoxFit.cover,
+                            ),
                 ),
               );
             },
