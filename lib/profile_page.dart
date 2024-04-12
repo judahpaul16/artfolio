@@ -3,7 +3,7 @@ import 'package:artfolio/utils/settings.dart';
 import 'package:artfolio/utils/db_helper.dart';
 
 class ProfilePage extends StatefulWidget {
-  const ProfilePage({Key? key}) : super(key: key);
+  const ProfilePage({super.key});
 
   @override
   State<ProfilePage> createState() => _ProfilePageState();
@@ -54,7 +54,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   );
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                        content: Text('Profile updated'),
+                        content: const Text('Profile updated'),
                         backgroundColor: Colors.green.withOpacity(0.8)),
                   );
                   Navigator.pop(context);

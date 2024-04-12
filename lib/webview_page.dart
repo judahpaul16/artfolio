@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
-class BuyCoffeePage extends StatelessWidget {
+class WebViewPage extends StatelessWidget {
+  final String title;
   final String url;
-  const BuyCoffeePage({Key? key, required this.url}) : super(key: key);
+  const WebViewPage({super.key, required this.title, required this.url});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Buy Me a Coffee'),
+        title: Text(title),
       ),
       body: WebView(
         initialUrl: url,

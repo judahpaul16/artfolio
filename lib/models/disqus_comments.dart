@@ -9,11 +9,11 @@ class DisqusComments extends StatefulWidget {
   final String url;
 
   const DisqusComments({
-    Key? key,
+    super.key,
     required this.disqusShortname,
     required this.identifier,
     required this.url,
-  }) : super(key: key);
+  });
 
   @override
   _DisqusCommentsState createState() => _DisqusCommentsState();
@@ -80,7 +80,7 @@ class _DisqusCommentsState extends State<DisqusComments> {
   void _adjustHeightPeriodically() {
     _heightAdjustmentTimer?.cancel();
 
-    _heightAdjustmentTimer = Timer.periodic(Duration(seconds: 1), (timer) {
+    _heightAdjustmentTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       _controller
           .evaluateJavascript("document.body.scrollHeight;")
           .then((result) {

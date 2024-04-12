@@ -6,7 +6,7 @@ import 'models/artwork.dart';
 class EditArtworkPage extends StatefulWidget {
   final Artwork artwork;
 
-  const EditArtworkPage({Key? key, required this.artwork}) : super(key: key);
+  const EditArtworkPage({super.key, required this.artwork});
 
   @override
   EditArtworkPageState createState() => EditArtworkPageState();
@@ -169,7 +169,7 @@ class EditArtworkPageState extends State<EditArtworkPage> {
               if (useUrl)
                 TextFormField(
                   controller: imageUrlController,
-                  decoration: InputDecoration(labelText: 'Image URL'),
+                  decoration: const InputDecoration(labelText: 'Image URL'),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter an image URL';
