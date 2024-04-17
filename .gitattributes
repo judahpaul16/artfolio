@@ -1,2 +1,32 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Linguist settings for Flutter projects
+
+# Exclude common directories that hold generated files
+build/** linguist-vendored
+linux/** linguist-vendored
+macos/** linguist-vendored
+web/** linguist-vendored
+windows/** linguist-vendored
+android/** linguist-vendored
+ios/** linguist-vendored
+
+# Mark auto-generated Dart code as generated
+lib/**/*.g.dart linguist-generated
+lib/**/*.gr.dart linguist-generated
+lib/**/*.freezed.dart linguist-generated
+
+# Exclude specific files or patterns that are auto-generated
+*.pb.dart linguist-generated
+*.pbenum.dart linguist-generated
+*.pbjson.dart linguist-generated
+*.pbserver.dart linguist-generated
+
+# Exclude Dart packages
+.dart_tool/** linguist-vendored
+.flutter-plugins linguist-vendored
+.flutter-plugins-dependencies linguist-vendored
+.packages linguist-vendored
+.pub-cache/ linguist-vendored
+.pub/ linguist-vendored
