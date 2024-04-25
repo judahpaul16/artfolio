@@ -1,5 +1,5 @@
 # Artfolio 📱🎨
- Artfolio is a mobile app designed to empower artists by providing a platform to showcase their creative work, connect with potential clients, and receive valuable feedback. Designed to be forked and customized, Artfolio is built with Flutter and SQL, making it easy to deploy and manage your own version of the app. Whether you're a painter, photographer, graphic designer, or any other type of artist, Artfolio is the perfect tool to help you grow your brand and reach a wider audience.
+Artfolio is a mobile app designed to empower artists by providing a platform to showcase their creative work, connect with potential clients, and receive valuable feedback. Designed to be forked and customized, Artfolio is built with Flutter and SQL, making it easy to deploy and manage your own version of the app. Whether you're a painter, photographer, graphic designer, or any other type of artist, Artfolio is the perfect tool to help you grow your brand and reach a wider audience.
 
 ## Features 🚀
 - **Portfolio**: Showcase your creative work with a beautiful and customizable portfolio.
@@ -74,3 +74,5 @@ Distributed under the MIT License. See `LICENSE` for more information.
 ## Screenshots 📸
 ![App Screenshot 1](screenshots/screenshot1.png)
 ![App Screenshot 2](screenshots/screenshot2.png)
+
+Presentation [here](https://youtu.be/pAZsOdD5LsI).
